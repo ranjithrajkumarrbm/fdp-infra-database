@@ -5,7 +5,7 @@ terraform {
   #
   # Native S3 state locking (Terraform >= 1.10) - no DynamoDB lock table.
   backend "s3" {
-    bucket       = "REPLACE-org-infra-state-bucket-ACCTID-eu-west-2-suffix"
+    bucket       = "fdp-infra-state-bucket-861477414666-eu-west-2-an"
     region       = "eu-west-2"
     use_lockfile = true
     encrypt      = true

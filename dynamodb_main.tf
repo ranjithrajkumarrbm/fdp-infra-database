@@ -35,33 +35,33 @@ locals {
 
   # ---- Per-environment config sets (identical keys in both) ------------- #
   #
-  # `tables` is intentionally empty: this repo provisions the DynamoDB module
-  # and its conventions, not any specific table. Add a table by putting the
-  # same key in BOTH sets, e.g.:
-  #
-  #   tables = {
-  #     users = {
-  #       hash_key                 = "user_id"
-  #       range_key                = null
-  #       attributes               = [{ name = "user_id", type = "S" }]
-  #       global_secondary_indexes = []
-  #       ttl_attribute_name       = ""
-  #       stream_enabled           = false
-  #       stream_view_type         = null
-  #     }
-  #   }
+  # Every table is on-demand (PAY_PER_REQUEST). Add a table by putting the same
+  # key under `tables` in BOTH sets; each key becomes a table named
+  # "<prefix>-<key>". Terraform manages the table only - never items.
   #
   env_configs = {
     dev = {
       env_name = "dev"
 
       # Table-wide defaults. Dev favours cost and quick teardown.
-      # All tables are on-demand (PAY_PER_REQUEST) - no capacity, no autoscaling.
       point_in_time_recovery_enabled = false
       deletion_protection_enabled    = false
       server_side_encryption_enabled = false
 
-      tables = {}
+      tables = {
+        transactions = {
+          hash_key  = "transactionId"
+          range_key = "customerId"
+          attributes = [
+            { name = "transactionId", type = "S" },
+            { name = "customerId", type = "S" },
+          ]
+          global_secondary_indexes = []
+          ttl_attribute_name       = ""
+          stream_enabled           = false
+          stream_view_type         = null
+        }
+      }
     }
 
     prod = {
@@ -72,7 +72,20 @@ locals {
       deletion_protection_enabled    = true
       server_side_encryption_enabled = true
 
-      tables = {}
+      tables = {
+        transactions = {
+          hash_key  = "transactionId"
+          range_key = "customerId"
+          attributes = [
+            { name = "transactionId", type = "S" },
+            { name = "customerId", type = "S" },
+          ]
+          global_secondary_indexes = []
+          ttl_attribute_name       = ""
+          stream_enabled           = false
+          stream_view_type         = null
+        }
+      }
     }
   }
 

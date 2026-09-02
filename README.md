@@ -24,20 +24,22 @@ DynamoDB tables for the `fdp` platform, London (`eu-west-2`).
 Region is fixed. `var.environment` picks one of the `dev` / `prod` config sets
 in [dynamodb_main.tf](dynamodb_main.tf).
 
-This repo ships with **no tables defined** - it provisions the DynamoDB module
-and the house conventions around it. A `plan`/`apply` with an empty `tables`
-map is a valid no-op.
+Tables are declared under `tables` in **both** the `dev` and `prod` config sets
+(the two sets must carry the same keys). Each entry becomes one call of
+[modules/dynamodb/](modules/dynamodb/) and one table named `fdp-<env>-euw2-<key>`.
+Terraform manages the table only - never items.
+
+Currently defined:
+
+| Key | Table name (`dev`) | Partition key | Sort key |
+|---|---|---|---|
+| `transactions` | `fdp-dev-euw2-transactions` | `transactionId` (S) | `customerId` (S) |
 
 ```bash
 terraform init -backend-config="key=fdp-infra-database/dev/terraform.tfstate"
 terraform plan  -var="environment=dev"
 terraform apply -var="environment=dev"
 ```
-
-Add a table later by adding an entry under `tables` in **both** the `dev` and
-`prod` config sets (the two sets must carry the same keys). Each entry becomes
-one call of [modules/dynamodb/](modules/dynamodb/) and one table named
-`fdp-<env>-euw2-<key>`.
 
 ## Module inputs of note
 
